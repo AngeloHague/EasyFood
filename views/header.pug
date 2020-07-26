@@ -1,7 +1,6 @@
 doctype html
 html
   head
-    title= title
     link(rel='stylesheet', href='/css/header.css')
     script(src="https://code.jquery.com/jquery-3.5.1.js")
   body
@@ -10,12 +9,10 @@ html
           |  EasyFood
         nav
           ul(class='nav_links')
-            li(href = '#') Inventory
-            li(href = '#') Recipes
-            li(href = '#') About
-            li(href = '#') Contact
+            li(href = '#') = Inventory
+            li(href = '#') = Recipes
+            li(href = '#') = About
+            li(href = '#') = Contact
             //li(href = '#') = Account
         button(type = 'button' class='acc' href='#') Login / Register
     
-
-    block content
