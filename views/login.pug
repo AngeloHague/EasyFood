@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='/css/login.css')
+  //  script(src='/js/login.js')
+    title Login | Easy Food
+  body
+      div(class = 'login-form')
+        h1 Login Form
+        form(action='auth' method='POST')
+          input(type='text' name='username' placeholder='Username' required)
+          input(type='password' name='password' placeholder='Password' required)
+          input(type='submit')
