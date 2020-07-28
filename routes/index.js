@@ -11,4 +11,14 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Login to EasyFood' });
 });
 
+/* GET login page. */
+router.get('/login', function(req, res, next) {
+  res.render('login', { title: 'Login to EasyFood' });
+});
+
+/* GET login page. */
+router.get('/login', function(req, res, next) {
+  res.render('login', { title: 'Login to EasyFood' });
+});
+
 module.exports = router;

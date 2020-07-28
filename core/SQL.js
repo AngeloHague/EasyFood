@@ -3,6 +3,8 @@ var session = require('express-session');
 //var bodyParser = require('body-parser');
 var path = require('path');
 
+console.log('SQL node loaded');
+
 //CONNECT TO AZURE SQL DATABASE:
 var Connection = require('tedious').Connection;
 var config = {
@@ -25,6 +27,8 @@ connection.on('connect', function(err) {
   // If no error, then good to proceed.
   console.log("Connected");
 });
-var connection = require('core/SQL.js');
 
-module.exports = connection;
+module.exports.connection = connection;
+module.exports.msg = "hello";
+
+console.log('connection exported');

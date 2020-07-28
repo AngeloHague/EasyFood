@@ -20,14 +20,24 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/home', indexRouter);
 app.use('/login', indexRouter);
+app.use('/users', usersRouter);
 
 //Enable use of static files:
 app.use('/img',express.static(path.join(__dirname, 'public/images')));
 app.use('/js',express.static(path.join(__dirname, 'public/javascripts')));
 app.use('/css',express.static(path.join(__dirname, 'public/stylesheets')));
 app.use('/fonts',express.static(path.join(__dirname, 'public/fonts')));
+
+app.post('/goTo', (req, res) => {
+  var page = req.body.global;
+  app.use(page, indexRouter);
+  console.log('Routing to ' + page + ' page');
+  res.json({
+    success: true
+  });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -44,29 +54,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-//CONNECT TO AZURE SQL DATABASE:
-
-var Connection = require('tedious').Connection;
-    var config = {
-        server: 'easyfood.database.windows.net',  //update me
-        authentication: {
-            type: 'default',
-            options: {
-                userName: 'easyfood', //update me
-                password: 'Hibernate1'  //update me
-            }
-        },
-        options: {
-            // If you are on Microsoft Azure, you need encryption:
-            encrypt: true,
-            database: 'EasyFood'  //update me
-        }
-    };
-    var connection = new Connection(config);
-    connection.on('connect', function(err) {
-        // If no error, then good to proceed.
-        console.log("Connected");
-    });
 
 module.exports = app;
