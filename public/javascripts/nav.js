@@ -1,4 +1,3 @@
 function goTo(page) {
-  location.href= '/' + page;
-
+  location.href= page;
 }

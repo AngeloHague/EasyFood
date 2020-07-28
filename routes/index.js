@@ -8,17 +8,17 @@ router.get('/', function(req, res, next) {
 
 /* GET login page. */
 router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Login to EasyFood' });
+  res.render('login', { title: 'Login | EasyFood' });
 });
 
 /* GET login page. */
-router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Login to EasyFood' });
+router.get('/inventory', function(req, res, next) {
+  res.render('inventory', { title: 'Inventory | EasyFood' });
 });
 
 /* GET login page. */
-router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Login to EasyFood' });
+router.get('/recipes', function(req, res, next) {
+  res.render('recipes', { title: 'Recipes | EasyFood' });
 });
 
 module.exports = router;

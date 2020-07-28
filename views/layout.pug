@@ -4,18 +4,19 @@ html
     title= title
     link(rel='stylesheet', href='/css/header.css')
     script(src="https://code.jquery.com/jquery-3.5.1.js")
+    script(src="/js/nav.js")
   body
     header
-        div(class='logo')
-          |  EasyFood
-        nav
-          ul(class='nav_links')
-            li(href = '#') Inventory
-            li(href = '#') Recipes
-            li(href = '#') About
-            li(href = '#') Contact
-            //li(href = '#') = Account
-        button(type = 'button' class='acc' href='#') Login / Register
+      div(class='logo' onClick='goTo("/home")')
+        |  EasyFood
+      nav
+        ul(class='nav_links')
+          li(onClick='goTo("/inventory")') = Inventory
+          li(onClick='goTo("/recipes")') = Recipes
+          li(onClick='goTo("/about")') = About
+          li(onClick='goTo("/contact")') = Contact
+      button(type = 'button' class='acc' onClick='goTo("/login")') Login / Register
     
+
 
     block content

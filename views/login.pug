@@ -1,14 +1,9 @@
-doctype html
-html
-  head
-    link(rel='stylesheet', href='/css/login.css')
-    title= title
-  body
-    include ./header.pug
-  body
-    div(class = 'login-form')
-      h1 Login Form
-      form(action='auth' method='POST')
-        input(type='text' name='username' placeholder='Username' required)
-        input(type='password' name='password' placeholder='Password' required)
-        input(type='submit')
+extends layout
+
+block content
+  div(class = 'login-form')
+    h1 Login Form
+    form(action='auth' method='POST')
+      input(type='text' name='username' placeholder='Username' required)
+      input(type='password' name='password' placeholder='Password' required)
+      input(type='submit')

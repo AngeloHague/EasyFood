@@ -1,10 +1,5 @@
-doctype html
-html
-  head
-    script(src='/javascript/slick.js')
-    title= title
-  body
-    include ./header.pug
-  body
-    div
-      | Recipes
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
