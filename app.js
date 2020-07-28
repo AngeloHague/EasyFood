@@ -30,15 +30,6 @@ app.use('/js',express.static(path.join(__dirname, 'public/javascripts')));
 app.use('/css',express.static(path.join(__dirname, 'public/stylesheets')));
 app.use('/fonts',express.static(path.join(__dirname, 'public/fonts')));
 
-app.post('/goTo', (req, res) => {
-  var page = req.body.global;
-  app.use(page, indexRouter);
-  console.log('Routing to ' + page + ' page');
-  res.json({
-    success: true
-  });
-});
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
