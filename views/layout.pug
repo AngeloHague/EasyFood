@@ -7,16 +7,19 @@ html
     script(src="/js/nav.js")
   body
     header
-      div(class='logo' onClick='goTo("/home")')
-        |  EasyFood
-      nav
-        ul(class='nav_links')
-          li(onClick='goTo("/inventory")') = Inventory
-          li(onClick='goTo("/recipes")') = Recipes
-          li(onClick='goTo("/about")') = About
-          li(onClick='goTo("/contact")') = Contact
-      button(type = 'button' class='acc' onClick='goTo("/login")') Login / Register
-    
-
+      nav(class = 'navbar')
+        div#toggleNav(class='toggle-button')
+          span(class = 'bar')
+          span(class = 'bar')
+          span(class = 'bar')
+            
+        div(class='logo' onClick='goTo("/home")') EasyFood
+        div#js-menu(class='nav_links')
+          ul
+            li(onClick='goTo("/inventory")') Inventory
+            li(onClick='goTo("/recipes")') Recipes
+            li(onClick='goTo("/about")') About
+            li(onClick='goTo("/contact")') Contact
+            li#accountLink(onClick='goTo("/login")')= account
 
     block content

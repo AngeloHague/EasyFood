@@ -7,36 +7,45 @@
   src: url('/fonts/Comfortaa-Medium.ttf');
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Comfortaa, sans-serif;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
 li, a, button {
   font-family: Comfortaa, sans-serif;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 1rem;
   text-decoration: none;
 }
 
 body {
-  box-sizing: border-box;
+  font-size: 1rem;
   margin: 0;
   padding: 0;
   background-color: #ffffff;
 }
 
 header {
-  display: flex;
-  justify-content: flex-end;
   align-items: center;
   background-color: #24252A;
   color: #edf0f1;
-  padding: 10px 5%;
+  padding: 0.625rem 0.3125rem;
 }
 
 .logo {
   font-family: logoFont, sans-serif;
   font-weight: 500;
-  font-size: 32px;
+  font-size: 2.5rem;
   color: white;
   cursor: pointer;
-  margin-right: auto;
+  margin: .5rem;
+  margin-left: 2.5rem;
   transition: all 0.3s ease 0s;
 }
 
@@ -44,19 +53,25 @@ header {
   color: rgba(255, 255, 255, 0.8);
 }
 
-nav {
-  order: 1;
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.nav_links {
+
+.nav_links ul {
   margin: 0;
+  padding: 0;
+  display: flex;
   link-style: none;
 }
 
 .nav_links li {
-  display: inline-block;
+  display: block;
   cursor: pointer;
-  padding: 10px 20px;
+  padding: 1rem 1.25rem;
   transition: all 0.3s ease 0s;
+  text-transform: uppercase;
 }
 
 .nav_links li:hover {
@@ -75,14 +90,74 @@ nav {
   order: 2;
 }
 
+.toggle-button {
+  cursor: pointer;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 3.75rem;
+  height: 3.25rem;
+  padding: 10px 10px 10px 10px;
+}
+
+.toggle-button .bar {
+  height: 5px;
+  width: 100%;
+  background-color: white;
+  border-radius: 10px;
+}
+
+@media(max-width: 1000px) {
+  nav {
+    width: 100%;
+  }
+  .toggle-button {
+    display: flex;
+  }
+
+  .logo {
+    font-size: 4rem;
+    margin: auto;
+    text-align: center;
+  }
+
+  .nav_links {
+    width: 100%;
+    display: none;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav_links ul {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .nav_links li {
+    text-align: center;
+    padding: 1rem 0 1rem 0;
+  }
+
+  .nav_links.active {
+    display: flex;
+  }
+}
+
 button {
   margin-left: 20px;
-  padding: 7px 15px;
+  padding: 10px 20px;
   background-color: white;
   border: none;
-  border-radius: 5px;
+  //border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease 0s;
+  text-transform: uppercase;
 }
 
 button:hover {

@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  link(rel='stylesheet', href='/css/login.css')
+  script(src="/js/login.js")
+  div(class = 'login-form')
+    div(class = 'loginPanel')
+      h1 Create an account
+      div#errorMessage= response
+      form#signupForm(method='POST')
+        input(type='text' name='username' placeholder='Username' required)
+        input(type='text' name='email' placeholder='Email' required)
+        input(type='password' name='password' placeholder='Password' required)
+        input(type='password' name='confirm' placeholder='Confirm password' required)
+        input(type='submit')
+        h2(onClick='goTo("/login")') or login here

@@ -2,18 +2,33 @@
 .login-form {
 	width: 300px;
 	margin: 0 auto;
-	margin-top: 20%;
+	margin-top: 10%;
 	padding: 30px;
 	padding-bottom: 40px;
-	font-family: Tahoma, Geneva, sans-serif;
+  font-family: Comfortaa, sans-serif;
 	background-color: rgb(225, 225, 225);;
 }
 
 .login-form h1 {
 	text-align: center;
 	color: #4d4d4d;
-	font-size: 24px;
-	padding: 20px 0 20px 0;
+	font-size: 1.5rem;
+	padding: 1.25rem 0 1.25rem 0;
+	margin: 1rem 0rem 1.625rem 0rem;
+	border-bottom: 1px solid rgb(140, 140, 140);
+}
+
+.login-form h2 {
+	cursor: pointer;
+	text-align: center;
+	color: #4d4d4d;
+	font-size: 18px;
+	padding: 10px 0 0 0;
+}
+
+.login-form #errorMessage {
+	color: red;
+	font-size: 14px;
 }
 
 .login-form input[type="password"],
@@ -23,6 +38,7 @@
 	border: 1px solid #dddddd;
 	margin-bottom: 15px;
 	box-sizing:border-box;
+  font-family: Comfortaa, sans-serif;
 }
 
 .login-form input[type="submit"] {
@@ -32,6 +48,7 @@
 	border: 0;
 	box-sizing: border-box;
 	cursor: pointer;
+  font-family: Comfortaa, sans-serif;
 	font-weight: bold;
 	color: #ffffff;
 }

@@ -1,34 +1,21 @@
+var createError = require('http-errors');
 var express = require('express');
 var session = require('express-session');
-//var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var path = require('path');
+var sql = require('mssql');
 
-console.log('SQL node loaded');
-
-//CONNECT TO AZURE SQL DATABASE:
-var Connection = require('tedious').Connection;
-var config = {
-  server: 'easyfood.database.windows.net',  //update me
-  authentication: {
-    type: 'default',
-    options: {
-      userName: 'easyfood', //update me
-      password: 'Hibernate1'  //update me
-    }
-  },
-  options: {
-    // If you are on Microsoft Azure, you need encryption:
-    encrypt: true,
-    database: 'EasyFood'  //update me
-  }
+// Create a configuration object for our Azure SQL connection parameters
+var dbConfig = {
+ server: 'easyfood.database.windows.net', // Use your SQL server name
+ database: 'EasyFood', // Database to connect to
+ user: 'easyfood', // Use your username
+ password: 'Hibernate1', // Use your password
+ port: 1433,
+ // Since we're on Windows Azure, we need to set the following options
+ options: {
+       encrypt: true
+   }
 };
-var connection = new Connection(config);
-connection.on('connect', function(err) {
-  // If no error, then good to proceed.
-  console.log("Connected");
-});
 
-module.exports.connection = connection;
-module.exports.msg = "hello";
-
-console.log('connection exported');
+module.export = dbConfig;

@@ -1,5 +1,7 @@
+##CREATING TABLES
+
 CREATE TABLE accounts (
-  user_id int NOT NULL PRIMARY KEY,
+  user_id int IDENTITY(1,1) NOT NULL PRIMARY KEY,
   username nvarchar(30) NOT NULL,
   password nvarchar(100) NOT NULL,
   email nvarchar(255) NOT NULL
@@ -39,3 +41,12 @@ CREATE TABLE inventory (
     measurement_id int NOT NULL FOREIGN KEY REFERENCES measurements(measurement_id),
     expiry_date date NOT NULL
 )
+
+##DROPPING TABLES:
+
+DROP TABLE inventory
+DROP TABLE recipes_ingredients
+DROP TABLE recipes
+DROP TABLE measurements
+DROP TABLE ingredients
+DROP TABLE accounts
