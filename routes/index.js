@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'EasyFood', account: updateLoginButton(req) });
+  res.render('index', { title: 'EasyFood', loggedin: req.session.loggedin });
 });
 
 /* GET login page. */
@@ -12,22 +12,23 @@ router.get('/login', function(req, res, next) {
     res.redirect('/account');
   }
   else
-    res.render('login', { title: 'Login', account: updateLoginButton(req) });
+    res.render('login', { title: 'Login', loggedin: req.session.loggedin });
 });
 
-/*Get Signup Page*/
+/* GET Signup Page */
 router.get('/signup', function(req, res, next) {
-  res.render('signup', { title: 'Sign up', account: updateLoginButton(req) });
+  res.render('signup', { title: 'Sign up', loggedin: req.session.loggedin });
 });
 
 /* GET Inventory page. */
 router.get('/inventory', function(req, res, next) {
-  res.render('inventory', { title: 'Inventory', account: updateLoginButton(req) });
+  console.log(req.session.inventory);
+  res.render('inventory', { title: 'Inventory', loggedin: req.session.loggedin, inventory: req.session.inventory });
 });
 
 /* GET Recipes page. */
 router.get('/recipes', function(req, res, next) {
-  res.render('recipes', { title: 'Recipes', account: updateLoginButton(req) });
+  res.render('recipes', { title: 'Recipes', loggedin: req.session.loggedin });
 });
 
 /* GET Account page. */
@@ -36,13 +37,11 @@ router.get('/account', function(req, res, next) {
     res.redirect('/login');
   }
   else
-  res.render('account', { title: 'My Account', account: updateLoginButton(req) });
+  res.render('account', { title: 'My Account', loggedin: req.session.loggedin });
 });
 
-function updateLoginButton(req) {
-  console.log('Checking session info: ' + req.session.loggedin);
-  if (req.session.loggedin) return 'My Account'
-  else return 'Login / Register';
+function logToConsole(print){
+  print.log('hello');
 }
 
 module.exports = router;

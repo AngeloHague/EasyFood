@@ -91,15 +91,16 @@ header {
 }
 
 .toggle-button {
+  transition: all 0.3s ease 0s;
   cursor: pointer;
   position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  top: .55rem;
+  right: .55rem;
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 3.75rem;
-  height: 3.25rem;
+  width: 3.5rem;
+  height: 3rem;
   padding: 10px 10px 10px 10px;
 }
 
@@ -110,7 +111,65 @@ header {
   border-radius: 10px;
 }
 
-@media(max-width: 1000px) {
+@media only screen and (max-width: 560px) {
+  html{
+    font-size: 24px;
+  }
+
+  .toggle-button {
+    cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 65px;
+    height: 55px;
+    padding: 10px 10px 10px 10px;
+  }
+
+  .toggle-button .bar {
+    height: 7.5px;
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+  }
+}
+
+@media only screen and (min-width: 560px)and (max-width: 768px) {
+  html{
+    font-size: 32px;
+  }
+
+  .toggle-button {
+    cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 90px;
+    height: 75px;
+    padding: 10px 10px 10px 10px;
+  }
+
+  .toggle-button .bar {
+    height: 10px;
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+  }
+
+  .logo {
+    font-size: 2.5rem;
+    margin: auto;
+    text-align: center;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
   nav {
     width: 100%;
   }
@@ -119,7 +178,7 @@ header {
   }
 
   .logo {
-    font-size: 4rem;
+    //font-size: 4rem;
     margin: auto;
     text-align: center;
   }

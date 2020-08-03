@@ -20,6 +20,9 @@ html
             li(onClick='goTo("/recipes")') Recipes
             li(onClick='goTo("/about")') About
             li(onClick='goTo("/contact")') Contact
-            li#accountLink(onClick='goTo("/login")')= account
+            if loggedin === true
+              li#accountLink(onClick='goTo("/login")') My Account
+            else
+                li#accountLink(onClick='goTo("/login")') Login / Register
 
     block content

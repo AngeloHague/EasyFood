@@ -8,7 +8,7 @@ var logger = require('morgan');
 var sql = require('mssql');
 
 var indexRouter = require('./routes/index');
-//var loginRouter = require('./routes/login');
+var inventoryRouter = require('./routes/inventory');
 var usersRouter = require('./routes/users');
 
 var app = express();
@@ -27,6 +27,7 @@ var dbConfig = {
  user: 'easyfood', // Use your username
  password: 'Hibernate1', // Use your password
  port: 1433,
+ //insecureAuth : true,
  // Since we're on Windows Azure, we need to set the following options
  options: {
        encrypt: true
@@ -45,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/home', indexRouter);
-app.use('/login', indexRouter);
+app.use('/inventory', inventoryRouter.router);
 app.use('/users', usersRouter);
 
 //Enable use of static files:
@@ -57,10 +58,9 @@ app.use('/fonts',express.static(path.join(__dirname, 'public/fonts')));
 
 //Handle Login Form
 app.post('/login', function(req, res) {
+
 	var username = req.body.username;
-	console.log(username);
 	var password = req.body.password;
-	console.log(password);
 	// Attempt to connect and execute queries if connection goes through
 	if (username && password) {
 	  var conn = new sql.ConnectionPool(dbConfig);
@@ -75,25 +75,30 @@ app.post('/login', function(req, res) {
 	    // Call mssql's query method passing in params
 	    request.query('SELECT * FROM accounts WHERE username LIKE \'' + username + '\' AND password LIKE \'' + password + '\'')
 	    .then(function (recordset) {
-	      console.log('Records: ' + recordset);
+				console.log(recordset.recordset[0]);
 	      if (recordset.rowsAffected > 0) {
 					req.session.loggedin = true;
+   				req.session.user_id = recordset.recordset[0].user_id;
    				req.session.username = username;
-					//req.session.userID =
-   				res.redirect('/home');
-					conn.closer();
+
+					inventoryRouter.getInventoryFromDb(req.session.user_id, req.session.username, function(inventory) {
+						console.log('Acquired inventory from function: ');
+						console.log(inventory);
+						req.session.inventory = inventory;
+						res.redirect('/home');
+					});
 	      }
-	      else
- 				//res.send('Incorrect Username and/or Password!');
- 				res.render('login', {response: 'Incorrect username and/or password.'});
-	      conn.close();
+	      else {
+	 				//res.send('Incorrect Username and/or Password!');
+	 				res.render('login', {response: 'Incorrect username and/or password.'});
+				}
+				conn.close();
 	    })
 	    // Handle sql statement execution errors
 	    .catch(function (err) {
 	      console.log(err);
 	      conn.close();
 	    })
-
 	  })
 	  // Handle connection errors
 	  .catch(function (err) {
@@ -106,13 +111,9 @@ app.post('/login', function(req, res) {
 //Handle Sign up method
 app.post('/signup', function(req, res) {
 	var username = req.body.username;
-	console.log(username);
 	var email = req.body.email;
-	console.log(email);
 	var password = req.body.password;
-	console.log(password);
 	var confirm = req.body.confirm;
-	console.log(confirm);
 	// Attempt to connect and execute queries if connection goes through
 	if (username && password && confirm) {
 	  var conn = new sql.ConnectionPool(dbConfig);
@@ -196,6 +197,52 @@ app.post('/signup', function(req, res) {
 	  });
 	}
 });
+
+/*
+function getInventoryFromDb(req, res, callback) {
+	var user_id = req.session.user_id;
+	var username = req.session.username;
+	var inventory = new Array();
+  //pull all SQL entries from ivnentory table with user_id
+  var conn = new sql.ConnectionPool(dbConfig);
+	var inventory = new Array();
+  conn.connect()
+  // Successfull connection
+  .then(function () {
+
+    // Create request instance, passing in connection instance
+    var request = new sql.Request(conn);
+		console.log(' -- Getting Inventory Data for User ID: ' + user_id + ', \"' + username + '\"');
+    // Call mssql's query method passing in params
+    request.query('SELECT inventory.inv_id, inventory.user_id, inventory.amount, inventory.measurement_id, inventory.expiry_date, ingredients.ingredient_id, ingredients.ingredient_name, measurements.measurement FROM ((ingredients INNER JOIN inventory ON inventory.ingredient_id=ingredients.ingredient_id) INNER JOIN measurements ON inventory.measurement_id=measurements.measurement_id) WHERE user_id = ' + user_id)
+    .then(function (recordset) {
+			console.log('Rows affected: ' + recordset.rowsAffected);
+      if (recordset.rowsAffected > 0) {
+				var i;
+				for (i = 0; i < recordset.rowsAffected; i++) {
+					inventory.push(recordset.recordset[i]);
+					console.log('Record (' + i + ') added to inventory:');
+					console.log(recordset.recordset[i]);
+				}
+				console.log('Finished adding records to inventory.');
+				//console.log(inventory);
+				callback(inventory);
+      }
+      conn.close();
+    })
+    // Handle sql statement execution errors
+    .catch(function (err) {
+      console.log(err);
+      conn.close();
+    })
+  })
+  // Handle connection errors
+  .catch(function (err) {
+    console.log(err);
+    conn.close();
+  });
+}*/
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
