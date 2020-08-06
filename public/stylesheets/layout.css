@@ -11,10 +11,14 @@
   box-sizing: border-box;
 }
 
-html {
+html, body {
   font-family: Comfortaa, sans-serif;
   font-size: 16px;
   box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
 }
 
 li, a, button {
@@ -26,30 +30,134 @@ li, a, button {
 
 body {
   font-size: 1rem;
+  height: 100%;
   margin: 0;
   padding: 0;
   background-color: #ffffff;
 }
 
-header {
+.page {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+.page .header {
+  flex: 0 1 auto;
   align-items: center;
   background-color: #24252A;
   color: #edf0f1;
   padding: 0.625rem 0.3125rem;
 }
 
+.page .contents {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.sidePanel {
+  //height: 100%;
+  width: 17rem;
+  //position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  color: white;
+  background-color: #17181c;
+  overflow-x: hidden;
+  padding-top: 20px;
+  //margin-top: 5.375rem;
+}
+
+.sidePanel .apple {
+  filter: invert();
+  display: block;
+  margin: auto;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  height: 5rem;
+  width: 5rem;
+}
+
+.sidePanel hr {
+  width: 10rem;
+  border: 0;
+  border-top: 4px dotted #bbb;
+  //border-radius: 2px;
+}
+
+.sidePanel .loggedInAs p {
+  font-size: 1.5rem;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  margin: 0;
+}
+
+.sidePanel .loggedInAs p:first-of-type {
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+}
+
+.panelContent ul {
+  margin: 0;
+  padding: 0;
+}
+
+.panelContent ul li {
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: .75rem 0 .75rem 0rem;
+}
+
+.panelContent ul li {
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: .75rem 0 .75rem 0rem;
+}
+
+.panelContent ul li:hover {
+  background-color: #24252A;
+}
+
+.panelContent h1 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.main {
+  width:80%;
+  padding: 0.625rem 0.625rem 0.625rem 0.625rem;
+}
+
+.footer {
+  display: flex;
+  flex: 0 1 40px;
+}
+
 .logo {
   font-family: logoFont, sans-serif;
   font-weight: 500;
   font-size: 2.5rem;
-  color: white;
   cursor: pointer;
   margin: .5rem;
-  margin-left: 2.5rem;
+  margin-left: 4.25rem;
   transition: all 0.3s ease 0s;
 }
-
-.logo:hover {
+.logo .logo2 {
+  color: white;
+}
+.logo .logo1 {
+  color: rgb(104, 200, 110);
+}
+.logo:hover span.logo2 {
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -86,6 +194,10 @@ header {
   color: #0088a9;
 }
 
+.activeLink {
+  color: rgb(104, 200, 110);
+}
+
 .acc {
   order: 2;
 }
@@ -116,6 +228,10 @@ header {
     font-size: 24px;
   }
 
+  .sidePanel {
+    display: none;
+  }
+
   .toggle-button {
     cursor: pointer;
     position: absolute;
@@ -140,6 +256,14 @@ header {
 @media only screen and (min-width: 560px)and (max-width: 768px) {
   html{
     font-size: 32px;
+  }
+
+  .main {
+    width: 100%;
+  }
+
+  .sidePanel {
+    display: none;
   }
 
   .toggle-button {

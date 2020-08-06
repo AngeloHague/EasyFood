@@ -2,27 +2,40 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/css/header.css')
+    link(rel='stylesheet', href='/css/layout.css')
     script(src="https://code.jquery.com/jquery-3.5.1.js")
     script(src="/js/nav.js")
   body
-    header
-      nav(class = 'navbar')
-        div#toggleNav(class='toggle-button')
-          span(class = 'bar')
-          span(class = 'bar')
-          span(class = 'bar')
-            
-        div(class='logo' onClick='goTo("/home")') EasyFood
-        div#js-menu(class='nav_links')
-          ul
-            li(onClick='goTo("/inventory")') Inventory
-            li(onClick='goTo("/recipes")') Recipes
-            li(onClick='goTo("/about")') About
-            li(onClick='goTo("/contact")') Contact
-            if loggedin === true
-              li#accountLink(onClick='goTo("/login")') My Account
-            else
-                li#accountLink(onClick='goTo("/login")') Login / Register
-
-    block content
+    div(class='page')
+      div(class='header')
+        nav(class = 'navbar')
+          div#toggleNav(class='toggle-button')
+            span(class = 'bar')
+            span(class = 'bar')
+            span(class = 'bar')
+              
+          div(class='logo' onClick='goTo("/home")')
+            span(class='logo1') Easy
+            span(class='logo2') Food
+          div#js-menu(class='nav_links')
+            ul
+              li(onClick='goTo("/inventory")' class='/goToInventory') Inventory
+              li(onClick='goTo("/recipes")' class='/goToRecipes') Recipes
+              li(onClick='goTo("/about")' class='/goToAbout') About
+              li(onClick='goTo("/contact")' class='goToContact') Contact
+              if loggedin === true
+                li#accountLink(onClick='goTo("/login")') Log out
+              else
+                  li#accountLink(onClick='goTo("/login")') Login / Register
+      div(class='contents')
+        if loggedin === true
+          div#sidePanel(class='sidePanel')
+            img(src='/img/apple.svg' class='apple')
+            div(class='loggedInAs')
+              p Logged in as: 
+              p= username
+            hr
+            div
+              block sidePanel
+        div#main(class='main')
+          block content

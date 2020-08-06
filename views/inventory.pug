@@ -1,18 +1,37 @@
 extends layout
 
+block sidePanel
+  div(class='panelContent')
+    h1 Inventory
+    hr
+    ul
+      li(onclick='') Add item
+      li#SelectItems(onclick='') Select items
+      li(onclick='') Remove items
+      
+    
+  
+
 block content
   script(src='/js/isotope.pkgd.min.js')
   script(src='/js/inventory.js')
   link(rel='stylesheet', href='/css/inventory.css')
   div
     if loggedin === true
+      div(class='inventory-stats')
+        div(class='stat-block expiring')
+          p Expiring soon:
+          p(class='stat' id='expiringItems') N/A
+        div(class='stat-block expired')
+          p Expired items:
+          p(class='stat' id='expiredItems') N/A
+      hr(class='ingredientDivider')
       div(class = 'inventory-grid')
         if inventory === undefined || inventory.length == 0
           p Inventory is empty. Add some ingredients
         else
           each item in inventory
-            div(class='grid-item' data-inv_id='' + item.ingredient_id)
-              img(src= item.image_url)
+            div(class='grid-item' data-inv_id= item.ingredient_id expirydate= item.expiry_date.substring(0,10) data-selected='false')
               p(class='measurements')
                 span(class='amount')= item.amount
                 if item.measurement === 'none'
@@ -20,5 +39,9 @@ block content
                 else
                   span(class='measurement')= item.measurement
               p(class='name')= item.ingredient_name
+              img(src= item.image_url)
+              div(class='expirydate')
+                p Expires on:
+                p= item.expiry_date.substring(0,10)
     else
       p No user logged in
