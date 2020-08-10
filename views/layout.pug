@@ -24,7 +24,7 @@ html
               li(onClick='goTo("/about")' class='/goToAbout') About
               li(onClick='goTo("/contact")' class='goToContact') Contact
               if loggedin === true
-                li#accountLink(onClick='goTo("/login")') Log out
+                li#accountLink(onClick='goTo("/logout")') Log out
               else
                   li#accountLink(onClick='goTo("/login")') Login / Register
       div(class='contents')

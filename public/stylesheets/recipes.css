@@ -39,7 +39,7 @@
   margin: 15% auto;
   padding: 0px;
   border: 1px solid #888;
-	width: 24rem;
+	width: 34rem;
   animation-name: animatetop;
   animation-duration: 0.4s
 }
@@ -51,9 +51,8 @@
 }
 
 .add-form {
-	width: 20rem;
+	width: 30rem;
 	margin: auto;
-	margin-top: 10%;
 	margin-bottom: 10%;
 	padding: 30px;
 	padding-bottom: 40px;
@@ -71,7 +70,6 @@
 }
 
 .add-form h2 {
-	cursor: pointer;
 	text-align: center;
 	color: #4d4d4d;
 	font-size: 18px;
@@ -93,6 +91,39 @@
   font-family: Comfortaa, sans-serif;
 }
 
+.ingredients {
+  height: 10rem;
+  overflow: auto;
+}
+
+.ingredients input[type="text"] {
+  font-size: .75rem;
+}
+
+.ingredients input[type="text"].itemName {
+	width: 40%;
+  margin-right: 2.5%;
+}
+
+.ingredients input[type="text"].amount {
+	width: 18.5%;
+  margin-right: 2.5%;
+}
+
+.ingredients input[type="text"].measurement {
+	width: 16.5%;
+  margin-right: 2.5%;
+}
+#addItemTemplate {
+  display: none;
+}
+#RecipeDetails p {
+  margin-left: 1rem;
+}
+.recipeIngredients {
+  margin-left: 1rem;
+}
+
 .add-form input[type="submit"] {
 	width: 100%;
 	padding: 15px;
@@ -105,16 +136,50 @@
 	color: #ffffff;
 }
 
-#AddForm input[type="text"].amount,
-#EditForm input[type="text"].amount {
-	width: 62.5%;
-  margin-right: 2.5%;
+.add-form input[type="button"].addIngredient {
+	width: 100%;
+	padding: 15px;
+  margin-bottom: 1rem;
+	background-color: #5b7161;
+	border: 0;
+	box-sizing: border-box;
+	cursor: pointer;
+  font-family: Comfortaa, sans-serif;
+	font-weight: bold;
+	color: #ffffff;
 }
 
-#AddForm input[type="text"].measurement,
-#EditForm input[type="text"].measurement {
-	width: 32.5%;
-  margin-left: 2.5%;
+.add-form input[type="button"].removeIngredient {
+  display: inline;
+	width: 15%;
+	padding: 15px;
+	background-color: #535b63;
+	border: 0;
+	box-sizing: border-box;
+	cursor: pointer;
+  font-family: Comfortaa, sans-serif;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+input[type="button"].useRecipe {
+	width: 100%;
+	padding: 15px;
+	background-color: #535b63;
+	border: 0;
+	box-sizing: border-box;
+	cursor: pointer;
+  font-family: Comfortaa, sans-serif;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+#RecipeDetails img {
+  border: 2px solid rgb(101, 101, 101);
+  display: block;
+  margin: auto;
+  width: 20rem;
+  height: 20rem;
 }
 
 .close {
@@ -144,11 +209,11 @@
   height: 8rem;
 }
 
-.inventory-stats .expiring {
+.inventory-stats .officialRecipes {
   background:rgb(104, 200, 110);
 }
 
-.inventory-stats .expired {
+.inventory-stats .myRecipes {
   background:rgb(200, 104, 104);
 }
 

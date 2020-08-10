@@ -5,9 +5,11 @@ block sidePanel
     h1 Inventory
     hr
     ul
-      li(onclick='') Add item
+      li#RefreshButton(onclick='goTo("/inventory/refresh")') Refresh items
+      li#AddButton(onclick='') Add item
       li#SelectItems(onclick='') Select items
-      li(onclick='') Remove items
+      li#RemoveButton(onclick='') Remove items
+      li#FindRecipesButton(onclick='') Find Recipes
       
     
   
@@ -16,11 +18,50 @@ block content
   script(src='/js/isotope.pkgd.min.js')
   script(src='/js/inventory.js')
   link(rel='stylesheet', href='/css/inventory.css')
+  div#AddItemPanel(class='modal')
+    if (response)
+      style={display: block}
+    div(class='modal-content')
+      div(class='modal-header')
+        span(class='close') &times;
+        h2 Add an item
+      div(class='modal-body')
+      div(class = 'add-form')
+        div#errorMessage= response
+        form#AddForm(method='POST' action='/inventory/add')
+          input(type='text' name='itemName' placeholder='Item Name' autocomplete="off" required)
+          input(type='text' name='itemAmount' class='amount' placeholder='Amount' autocomplete="off" required)
+          input(type='text' name='itemMeasurement' class='measurement' placeholder='meas.' autocomplete="off")
+          input(type='text' name='itemImage' placeholder='Image URL' autocomplete="off")
+          input(type='date' name='itemExpiryDate' placeholder='Expiry Date' autocomplete="off" required)
+          input(type='submit' name='itemButton' value='Add item' class)
+  div#EditItemPanel(class='modal')
+    if (response)
+      style={display: block}
+    div(class='modal-content')
+      div(class='modal-header')
+        span(class='close') &times;
+        h2 Edit item
+      div(class='modal-body')
+      div(class = 'add-form')
+        div#errorMessage= response
+        form#EditForm(method='POST' action='/inventory/edit')
+          input(type='hidden' name='invID' value='')
+          input(type='text' name='itemName' placeholder='Item Name' autocomplete="off" required)
+          input(type='text' name='itemAmount' class='amount' placeholder='Amount' autocomplete="off" required)
+          input(type='text' name='itemMeasurement' class='measurement' placeholder='meas.' autocomplete="off")
+          input(type='text' name='itemImage' placeholder='Image URL' autocomplete="off")
+          input(type='date' name='itemExpiryDate' placeholder='Expiry Date' autocomplete="off" required)
+          input(type='submit' name='itemButton' value='Save changes' class)
   div
     if loggedin === true
       div(class='inventory-stats')
+        div(class='stat-block total')
+          p All items:
+          p(class='stat' id='noOfItems')= inventory.length
         div(class='stat-block expiring')
-          p Expiring soon:
+          div(class='tooltip') Expiring soon:
+            span(class='tooltipText') Within 7 days
           p(class='stat' id='expiringItems') N/A
         div(class='stat-block expired')
           p Expired items:
@@ -31,7 +72,8 @@ block content
           p Inventory is empty. Add some ingredients
         else
           each item in inventory
-            div(class='grid-item' data-inv_id= item.ingredient_id expirydate= item.expiry_date.substring(0,10) data-selected='false')
+            div(class='grid-item' data-inv_id= item.inv_id expirydate= item.expiry_date.substring(0,10) data-selected='false')
+              p(class='indicator')
               p(class='measurements')
                 span(class='amount')= item.amount
                 if item.measurement === 'none'
@@ -42,6 +84,6 @@ block content
               img(src= item.image_url)
               div(class='expirydate')
                 p Expires on:
-                p= item.expiry_date.substring(0,10)
+                p(class='date')= item.expiry_date.substring(0,10)
     else
       p No user logged in

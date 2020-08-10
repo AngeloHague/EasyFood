@@ -1,5 +1,98 @@
 extends layout
 
+block sidePanel
+  div(class='panelContent')
+    h1 Recipes
+    hr
+    ul
+      li#RefreshButton(onclick='goTo("/recipes/refresh")') Refresh items
+      li#AddButton(onclick='') Add Recipe
+      li#SelectItems(onclick='') Select Recipes
+      li#RemoveButton(onclick='') Remove Recipes
+      
+    
+  
+
 block content
-  h1= title
-  p Welcome to #{title}
+  script(src='/js/isotope.pkgd.min.js')
+  script(src='/js/recipes.js')
+  link(rel='stylesheet', href='/css/recipes.css')
+  div#AddItemPanel(class='modal')
+    if (response)
+      style={display: block}
+    div(class='modal-content')
+      div(class='modal-header')
+        span(class='close') &times;
+        h2 Add a recipe
+      div(class='modal-body')
+      div(class = 'add-form')
+        div#addItemTemplate
+          div(class='ingredient')
+            input(type='text' name='itemName' class='itemName' placeholder='Ingredient' autocomplete="off" required)
+            input(type='text' name='itemAmount' class='amount' placeholder='Amount' autocomplete="off" required)
+            input(type='text' name='itemMeasurement' class='measurement' placeholder='meas.' autocomplete="off")
+            input(type='button' class='removeIngredient' name='removeIngredient' value='X' class)
+        h2 Recipe Details
+        div#errorMessage= response
+        form#AddRecipeForm(method='POST' action='/recipes/add')
+          input(type='text' name='recipeName' placeholder='Recipe Title' autocomplete="off" required)
+          input(type='text' name='recipeSource' class='source' placeholder='Source' autocomplete="off" required)
+          input(type='text' name='recipeURL' class='Recipe URL' placeholder='Recipe URL' autocomplete="off")
+          input(type='text' name='recipeImage' placeholder='Image URL' autocomplete="off")
+          div(class='ingredientsHeader')
+            h2 Ingredients
+            input(type='button' class='addIngredient' name='addIngredient' value='Add an ingredient' class)
+          div(class='ingredients')
+            div(class='ingredient')
+              input(type='text' name='itemName' class='itemName' placeholder='Ingredient' autocomplete="off" required)
+              input(type='text' name='itemAmount' class='amount' placeholder='Amount' autocomplete="off" required)
+              input(type='text' name='itemMeasurement' class='measurement' placeholder='meas.' autocomplete="off")
+              input(type='button' class='removeIngredient' name='removeIngredient' value='X' class)
+          input(type='submit' name='itemButton' value='Add recipe' class)
+  div#UseItemPanel(class='modal')
+    div(class='modal-content')
+      div(class='modal-header')
+        span(class='close') &times;
+        h2 Recipe Details
+      div(class='modal-body')
+      div#RecipeDetails
+        h2(class = 'recipeTitle')
+        p Source: 
+          span(class='recipeSource')
+        p Link: 
+          a(href='' class='recipeLink') Check it out
+        img(src='' class='recipeImage')
+        div(class='recipeIngredients')  Ingredients
+          ul
+            li
+              span(class='itemName')
+              span(class='itemAmount')
+              span(class='itemMeasurement')
+                
+        input(type='button' class='useRecipe' name='useRecipe' value='Use this recipe' class)
+  div
+    if loggedin === true
+      div(class='inventory-stats')
+        div(class='stat-block total')
+          p All items:
+          p(class='stat' id='noOfItems')= recipes.length
+        div(class='stat-block officialRecipes')
+          div(class='tooltip') EasyFood Recipes:
+            span(class='tooltipText') Within 7 days
+          p(class='stat' id='officialRecipes') N/A
+        div(class='stat-block myRecipes')
+          p My Recipes:
+          p(class='stat' id='myRecipes') N/A
+      hr(class='ingredientDivider')
+      div(class = 'recipe-grid')
+        if recipes === undefined || recipes.length == 0
+          p No recipes. Feel free to add some!
+        else
+          each recipe in recipes
+            div(class='grid-item' data-author_id=recipe.user_id data-recipe_id= recipe.recipe_id data-name= recipe.title data-itemsOwned=0 data-selected='false' data-url= recipe.url)
+              p(class='indicator')
+              p(class='title')= recipe.title
+              img(src= recipe.image_url)
+              p(class='source')= recipe.source
+    else
+      p No user logged in

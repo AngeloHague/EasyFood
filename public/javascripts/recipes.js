@@ -17,8 +17,7 @@ $(document).ready(function() {
   //Close Add Item panel
   $('.close').click(function(){
     $('#AddItemPanel').css('display', 'none');
-    $('#EditItemPanel').css('display', 'none');
-    $('#EditForm').trigger('reset');
+    $('#UseItemPanel').css('display', 'none');
   });
   //Select Items code:
   $('#SelectItems').click(function(){
@@ -39,7 +38,7 @@ $(document).ready(function() {
   });
   $('.grid-item').click(function(){
     if (selectingItems === true) {
-      var selectedItem = $(this).attr('data-inv_id');
+      var selectedItem = $(this).attr('data-recipe_id');
       if ($(this).attr('data-selected') === 'false') {
         $(this).toggleClass('selected');
         $(this).attr('data-selected','true');
@@ -52,23 +51,46 @@ $(document).ready(function() {
           return value != selectedItem;
         });
       }
-      //console.log($(this).attr('data-selected')); //DEBUG PURPOSES
-      //console.log(selectedItems); //DEBUG PURPOSES
+      console.log($(this).attr('data-selected')); //DEBUG PURPOSES
+      console.log(selectedItems); //DEBUG PURPOSES
     }
     else {
-      var inv_id = $(this).attr('data-inv_id');
-      var itemName = $(this).children('.name').text();
-      var amount = $(this).children('.measurements').children('.amount').text();
-      var measurement = $(this).children('.measurements').children('.measurement').text();
+      var recipe_id = $(this).attr('data-recipe_id');
+      var user_id = $(this).attr('data-author_id');
+      var title = $(this).attr('data-name');
+      var source = $(this).children('.source').text();
+      var url = $(this).attr('data-url');
       var imageurl = $(this).children('img').attr('src');
-      var expirydate = $(this).children('.expirydate').children('.date').text();
-      $('[name="invID"]').val(inv_id);
-      $('[name="itemName"]').val(itemName);
-      $('[name="itemAmount"]').val(amount);
-      $('[name="itemMeasurement"]').val(measurement);
-      $('[name="itemImage"]').val(imageurl);
-      $('[name="itemExpiryDate"]').val(expirydate);
-      $('#EditItemPanel').css('display', 'block');
+      var ingredients = $(this).children('.ingredients');
+      $('.recipeTitle').text(title);
+      $('.recipeSource').text(source);
+      $('.recipeLink').attr('href', url);
+      $('.recipeImage').attr('src', imageurl);
+      $('#UseItemPanel').css('display', 'block');
+
+      $.ajax({
+      url: '/recipes/use',
+      type: 'POST',
+      cache: false,
+      data: {
+        recipe_id: recipe_id,
+        user_id: user_id
+      },
+      success: function(data){
+        if (ingredients) {
+          for(ingredient in ingredients) {
+            
+          }
+        }
+        else {
+          alert('Something went wrong. Refresh and try again')
+        }
+      },
+      error: function(jqXHR, textStatus, err){
+             alert('text status '+textStatus+', err '+err)
+           }
+       });
+
     }
   });
   //Remove items functions:
@@ -78,7 +100,7 @@ $(document).ready(function() {
     }
     else {
       $.ajax({
-        url: '/inventory/remove',
+        url: '/recipes/remove',
         type: 'POST',
         cache: false,
         data: {
@@ -99,37 +121,30 @@ $(document).ready(function() {
       });
     }
   });
-  //Find Recipes with selected items:
-  $('#FindRecipesButton').click(function(){
-    if (selectingItems === false) {
-      alert('Use \'Select Items\' to select items before using this option.');
-    }
-    else {
-      $.ajax({
-        url: '/recipes/find',
-        type: 'POST',
-        cache: false,
-        data: {
-          ids: selectedItems
-        },
-        success: function(data){
-          if (data) {
-            console.log('Respond received:');
-            console.log(data);
-            //goTo('/inventory/refresh');
-          }
-          else {
-            alert('Something went wrong. Refresh and try again')
-          }
-        },
-        error: function(jqXHR, textStatus, err){
-               alert('text status '+textStatus+', err '+err)
-             }
-      });
-    }
+
+  //Add Recipe FORM:
+  $('.addIngredient').click(function(){
+    var input = $('#addItemTemplate').html();
+    jQuery('.ingredients').append(input);
+    $('.removeIngredient').bind("click", function(e) {
+      $(e.target).closest(".ingredient").remove();
+    });
   });
+
+  //Use Recipe FORM:
+  $('.addIngredient').click(function(){
+    var input = $('#addItemTemplate').html();
+    jQuery('.ingredients').append(input);
+    $('.removeIngredient').bind("click", function(e) {
+      $(e.target).closest(".ingredient").remove();
+    });
+  });
+
+
+
+
   // init Isotope (used for filtering)
-  var $grid = $('.inventory-grid').isotope({
+  var $grid = $('.recipe-grid').isotope({
     itemSelector: '.grid-item',
     layoutMode: 'fitRows'
   });
@@ -140,13 +155,13 @@ $(document).ready(function() {
       console.log('expiring block clicked');
       $grid.isotope({ filter: ''});
     }
-    if ($(this).hasClass('expiring')) {
+    if ($(this).hasClass('myRecipes')) {
       console.log('expiring block clicked');
-      $grid.isotope({ filter: '.expiring'});
+      $grid.isotope({ filter: '.myRecipe'});
     }
-    if ($(this).hasClass('expired')) {
+    if ($(this).hasClass('officialRecipes')) {
       console.log('expired block clicked');
-      $grid.isotope({ filter: '.expired'});
+      $grid.isotope({ filter: '.officialRecipe'});
     }
   });
 
@@ -155,16 +170,37 @@ $(document).ready(function() {
     if (event.target == document.getElementById("AddItemPanel")) {
       $('#AddItemPanel').css('display', 'none');
       $('#AddForm').trigger('reset');
-      $('#EditForm').trigger('reset');
     }
     if (event.target == document.getElementById("EditItemPanel")) {
-      $('#EditItemPanel').css('display', 'none');
-      $('#EditForm').trigger('reset');
+      $('#UseItemPanel').css('display', 'none');
       $('#AddForm').trigger('reset');
     }
   }
 });
 
+function inputIngredients(recipe_id, user_id) {
+  $.ajax({
+  url: '/recipes/use',
+  type: 'POST',
+  cache: false,
+  data: {
+    recipe_id: recipe_id,
+    user_id: user_id
+  },
+  success: function(data){
+    if (data === true) {
+      alert('Items successfully deleted. Refreshing page')
+      goTo('/inventory/refresh');
+    }
+    else {
+      alert('Something went wrong. Refresh and try again')
+    }
+  },
+  error: function(jqXHR, textStatus, err){
+         alert('text status '+textStatus+', err '+err)
+       }
+   });
+}
 
 window.onbeforeunload = confirmExit;
   function confirmExit()
@@ -173,26 +209,19 @@ window.onbeforeunload = confirmExit;
   }
 
 function updateStatisticCards () {
-  expiringItems = 0;
-  expiredItems = 0;
+  myRecipes = 0;
+  officialRecipes = 0;
   $('.grid-item').each(function(i, obj) {
-    var expiry = new Date($(this).attr('expirydate').split("-"));
-    var date = new Date();
-    var msPerDay = 1000 * 60 * 60 * 24;
-    var msBetween = expiry.getTime() - date.getTime();
-    var days = msBetween / msPerDay;
-
-    //Round Down
-    var days = Math.round((expiry-date)/(1000*60*60*24));
-    if (days < 0) {
-      expiredItems++;
-      $(this).addClass('expired');
+    var author_id = $(this).attr('data-author_id');
+    if (author_id == 1) {
+      officialRecipes++;
+      $(this).addClass('officialRecipe');
     }
-    else if (days <= 7) {
-      expiringItems++;
-      $(this).addClass('expiring');
+    else {
+      myRecipes++;
+      $(this).addClass('myRecipe');
     }
   });
-  $("#expiringItems").html(expiringItems);
-  $("#expiredItems").html(expiredItems);
+  $("#officialRecipes").html(officialRecipes);
+  $("#myRecipes").html(myRecipes);
 }

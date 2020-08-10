@@ -1,0 +1,132 @@
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal h2 {
+	text-align: center;
+	color: #white;
+	font-size: 1.5rem;
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Modal Body */
+.modal-body {padding: 2px 16px;}
+/* Modal Footer */
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: rgb(215, 215, 215);
+  margin: 15% auto;
+  padding: 0px;
+  border: 1px solid #888;
+	width: 24rem;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+/* Add Animation */
+@keyframes animatetop {
+  from {top: -300px; opacity: 0}
+  to {top: 0; opacity: 1}
+}
+
+.add-form {
+	width: 20rem;
+	margin: auto;
+	margin-top: 10%;
+	margin-bottom: 10%;
+	padding: 30px;
+	padding-bottom: 40px;
+  font-family: Comfortaa, sans-serif;
+	background-color: rgb(215, 215, 215);
+}
+
+.add-form h1 {
+	text-align: center;
+	color: #4d4d4d;
+	font-size: 1.5rem;
+	padding: .5rem 0 .5rem 0;
+	margin: 1rem 0rem 0.625rem 0rem;
+	border-bottom: 1px solid rgb(140, 140, 140);
+}
+
+.add-form h2 {
+	cursor: pointer;
+	text-align: center;
+	color: #4d4d4d;
+	font-size: 18px;
+	padding: 10px 0 0 0;
+}
+
+.add-form #errorMessage {
+	color: red;
+	font-size: 14px;
+}
+
+.add-form input[type="date"],
+.add-form input[type="text"] {
+	width: 100%;
+	padding: 15px;
+	border: 1px solid #dddddd;
+	margin-bottom: 15px;
+	box-sizing:border-box;
+  font-family: Comfortaa, sans-serif;
+}
+
+.add-form input[type="submit"] {
+	width: 100%;
+	padding: 15px;
+	background-color: #535b63;
+	border: 0;
+	box-sizing: border-box;
+	cursor: pointer;
+  font-family: Comfortaa, sans-serif;
+	font-weight: bold;
+	color: #ffffff;
+}
+
+#AddForm input[type="text"].amount,
+#EditForm input[type="text"].amount {
+	width: 62.5%;
+  margin-right: 2.5%;
+}
+
+#AddForm input[type="text"].measurement,
+#EditForm input[type="text"].measurement {
+	width: 32.5%;
+  margin-left: 2.5%;
+}
+
+.close {
+  color: white;
+  float: right;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -9,11 +9,12 @@ var sql = require('mssql');
 
 var indexRouter = require('./routes/index');
 var inventoryRouter = require('./routes/inventory');
+var recipeRouter = require('./routes/recipes');
 var usersRouter = require('./routes/users');
 
 var app = express();
 app.use(session({
-	secret: 'secret',
+	secret: 'w6yhEB3BWNsI',
 	resave: true,
 	saveUninitialized: true
 }));
@@ -25,7 +26,7 @@ var dbConfig = {
  server: 'easyfood.database.windows.net', // Use your SQL server name
  database: 'EasyFood', // Database to connect to
  user: 'easyfood', // Use your username
- password: 'Hibernate1', // Use your password
+ password: 't7M6RGQU5n7t', // Use your password
  port: 1433,
  //insecureAuth : true,
  // Since we're on Windows Azure, we need to set the following options
@@ -47,6 +48,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/home', indexRouter);
 app.use('/inventory', inventoryRouter.router);
+app.use('/recipes', recipeRouter.router);
 app.use('/users', usersRouter);
 
 //Enable use of static files:
@@ -55,6 +57,302 @@ app.use('/js',express.static(path.join(__dirname, 'public/javascripts')));
 app.use('/css',express.static(path.join(__dirname, 'public/stylesheets')));
 app.use('/fonts',express.static(path.join(__dirname, 'public/fonts')));
 
+//Handle 'Add recipe' Form request
+app.post('/recipes/add', function(req, res) {
+	console.log(req.body);
+	var recipeName = req.body.recipeName;
+	var recipeSource = req.body.recipeSource;
+	var recipeURL = req.body.recipeURL;
+	var recipeImage = req.body.recipeImage;
+	var itemName = req.body.itemName;
+	var itemAmount = req.body.itemAmount;
+	var itemMeasurement = req.body.itemMeasurement;
+	if (itemName.length == itemAmount.length && itemAmount.length == itemMeasurement.length) {
+		recipeRouter.addRecipeToDB(req.session.user_id, recipeName, recipeSource, recipeURL, recipeImage, function(recipe_id) {
+			console.log('SUCCESS! Recipe added. Recipe ID: ' + recipe_id);
+
+			function forLoopCallback(i) {
+				inventoryRouter.getSetIngredientID(itemName[i], function(itemID) {
+					console.log('We got the Ingredient: ' + itemID);
+					inventoryRouter.getSetMeasurementID(itemMeasurement[i], function(measurementID) {
+						console.log('We got the Measurement: ' + measurementID);
+						recipeRouter.addIngredientToRecipe(recipe_id, itemID, req.body.itemAmount[i], measurementID, function(success) {
+							if (success == true && i == itemName.length-1) {
+								recipeRouter.updateRecipeStack(req,res, function(callback) {
+									inventoryRouter.getInventoryFromDb(req.session.user_id, req.session.username, function(inventory) {
+								  	console.log('Acquired inventory from function: ');
+								  	console.log(inventory);
+								  	req.session.inventory = inventory;
+								  	res.render('recipes', { title: 'Recipes', loggedin: req.session.loggedin, recipes: req.session.recipes });
+								  });
+								});
+							}
+							else {
+								res.render('recipes', {response: 'There was an issue adding this item. Please try again'});
+							}
+						});
+					});
+				});
+			}
+
+			for (var i=0;i<itemName.length;i++) {
+				forLoopCallback(i);
+			}
+		});
+	}
+});
+
+//Handle getIngredients Recipe Request
+app.post('/recipe/getIngredients', function(req, res) {
+	console.log('Use recipe request received'); //DEBUG purposes
+	var conn = new sql.ConnectionPool(dbConfig);
+	var recipe_id = req.body.recipe_id;
+	var user_id = req.session.user_id;
+
+	conn.connect()
+	// Successfull connection
+	.then(function () {
+		//Build Query string from the array of inventory IDs
+		console.log(recipe_id);
+		var query = 'SELECT * FROM recipes_ingredients WHERE recipe_id LIKE ' + recipe_id;
+
+		console.log(query);
+
+		// Create request instance, passing in connection instance
+		var request = new sql.Request(conn);
+
+		// Call mssql's query method passing in params
+		request.query(query)
+		.then(function (recordset) {
+			if (recordset.rowsAffected > 0) {
+				for (rset in recordset.recordset) {
+
+				}
+				console.log('Item(s) removed');
+				res.send(true);
+				conn.close();
+			}
+		})
+		// Handle sql statement execution errors
+		.catch(function (err) {
+			console.log(err);
+			res.send(false);
+			conn.close();
+		})
+	})
+	// Handle connection errors
+	.catch(function (err) {
+		console.log(err);
+		res.send(false);
+		conn.close();
+	});
+});
+
+//Handle 'Find recipe' Form request
+app.post('/recipes/find', function(req, res) {
+	console.log('Find request received'); //DEBUG purposes
+	var conn = new sql.ConnectionPool(dbConfig);
+
+	conn.connect()
+	// Successfull connection
+	.then(function () {
+		//Build Query string from the array of inventory IDs
+		console.log(req.body.ids);
+		var query = 'SELECT recipe_id FROM recipes_ingredients WHERE ingredient_id IN ('
+		var counter;
+		for (counter = 0; counter < req.body.ids.length; counter++) {
+			query = query + req.body.ids[counter];
+			if (counter < req.body.ids.length-1)
+				query = query + ','
+			else if (counter == req.body.ids.length-1)
+				query = query + ')'
+		}
+
+		console.log(query);
+
+		// Create request instance, passing in connection instance
+		var request = new sql.Request(conn);
+
+		// Call mssql's query method passing in params
+		request.query(query)
+		.then(function (recordset) {
+			var ids = new Array();
+			console.log(recordset.recordset);
+			for (var i = 0; i < recordset.rowsAffected; i++) {
+				console.log(recordset.recordset[i]);
+				console.log('Recipe found: '+ recordset.recordset[i].recipe_id);
+				ids.push(recordset.recordset[i].recipe_id);
+			}
+			req.session.filterRecipes = ids;
+			res.send(true);
+			conn.close();
+		})
+		// Handle sql statement execution errors
+		.catch(function (err) {
+			console.log(err);
+			res.send(false);
+			conn.close();
+		})
+	})
+	// Handle connection errors
+	.catch(function (err) {
+		console.log(err);
+		res.send(false);
+		conn.close();
+	});
+});
+
+//Handle Remove Recipe Request
+app.post('/recipe/remove', function(req, res) {
+	console.log('Remove request received'); //DEBUG purposes
+	var conn = new sql.ConnectionPool(dbConfig);
+
+	conn.connect()
+	// Successfull connection
+	.then(function () {
+		//Build Query string from the array of inventory IDs
+		console.log(req.body.ids);
+		var query = 'DELETE FROM recipes WHERE'
+		var counter;
+		for (counter = 0; counter < req.body.ids.length; counter++) {
+			query = query + ' (inv_id = ' + req.body.ids[counter] + ' AND user_id = ' + req.session.user_id + ')';
+			if (counter < req.body.ids.length-1)
+				query = query + ' OR'
+		}
+
+		console.log(query);
+
+		// Create request instance, passing in connection instance
+		var request = new sql.Request(conn);
+
+		// Call mssql's query method passing in params
+		request.query(query)
+		.then(function (recordset) {
+			console.log('Item(s) removed');
+			res.send(true);
+			conn.close();
+		})
+		// Handle sql statement execution errors
+		.catch(function (err) {
+			console.log(err);
+			res.send(false);
+			conn.close();
+		})
+	})
+	// Handle connection errors
+	.catch(function (err) {
+		console.log(err);
+		res.send(false);
+		conn.close();
+	});
+});
+
+//Handle 'Add to inventory' Form request
+app.post('/inventory/add', function(req, res) {
+	var itemName = req.body.itemName;
+	var amount = req.body.itemAmount;
+	var measurement = req.body.itemMeasurement;
+	var expirydate = req.body.itemExpiryDate;
+	var imageURL = req.body.itemImage;
+	var buttonType = req.body.itemButton;
+	console.log('Item Name: ' + itemName);
+	console.log('Amount: ' + amount);
+	console.log('Measurement: ' + measurement);
+	console.log('Expiry date: ' + expirydate);
+	if (itemName && amount && expirydate) {
+		inventoryRouter.getSetIngredientID(itemName, function(itemID) {
+			console.log('We got the Ingredient: ' + itemID);
+			inventoryRouter.getSetMeasurementID(measurement, function(measurementID) {
+				console.log('We got the Measurement: ' + measurementID);
+				inventoryRouter.addItemToInventory(req.session.user_id, itemID, amount, measurementID, imageURL, expirydate, function(success) {
+					if (success == true) {
+						inventoryRouter.updateInventory(req,res);
+					}
+					else {
+						res.render('inventory', {response: 'There was an issue adding this item. Please try again'});
+					}
+				});
+			});
+		});
+	}
+});
+
+//Handle 'Add to inventory' Form request
+app.post('/inventory/edit', function(req, res) {
+	var invID = req.body.invID;
+	var itemName = req.body.itemName;
+	var amount = req.body.itemAmount;
+	var measurement = req.body.itemMeasurement;
+	var expirydate = req.body.itemExpiryDate;
+	var imageURL = req.body.itemImage;
+	var buttonType = req.body.itemButton;
+	console.log('Inv ID: ' + itemName);
+	console.log('Item Name: ' + itemName);
+	console.log('Amount: ' + amount);
+	console.log('Measurement: ' + measurement);
+	console.log('Expiry date: ' + expirydate);
+	if (itemName && amount && expirydate) {
+		inventoryRouter.getSetIngredientID(itemName, function(itemID) {
+			console.log('We got the Ingredient: ' + itemID);
+			inventoryRouter.getSetMeasurementID(measurement, function(measurementID) {
+				console.log('We got the Measurement: ' + measurementID);
+				inventoryRouter.editItemInInventory(invID, req.session.user_id, itemID, amount, measurementID, imageURL, expirydate, function(success) {
+					if (success == true) {
+						inventoryRouter.updateInventory(req,res);
+					}
+					else {
+						res.render('inventory', {response: 'There was an issue adding this item. Please try again'});
+					}
+				});
+			});
+		});
+	}
+});
+
+//Handle Remove Item Request
+app.post('/inventory/remove', function(req, res) {
+	console.log('Remove request received'); //DEBUG purposes
+	var conn = new sql.ConnectionPool(dbConfig);
+
+	conn.connect()
+	// Successfull connection
+	.then(function () {
+		//Build Query string from the array of inventory IDs
+		console.log(req.body.ids);
+		var query = 'DELETE FROM inventory WHERE'
+		var counter;
+		for (counter = 0; counter < req.body.ids.length; counter++) {
+			query = query + ' (inv_id = ' + req.body.ids[counter] + ' AND user_id = ' + req.session.user_id + ')';
+			if (counter < req.body.ids.length-1)
+				query = query + ' OR'
+		}
+
+		console.log(query);
+
+		// Create request instance, passing in connection instance
+		var request = new sql.Request(conn);
+
+		// Call mssql's query method passing in params
+		request.query(query)
+		.then(function (recordset) {
+			console.log('Item(s) removed');
+			res.send(true);
+			conn.close();
+		})
+		// Handle sql statement execution errors
+		.catch(function (err) {
+			console.log(err);
+			res.send(false);
+			conn.close();
+		})
+	})
+	// Handle connection errors
+	.catch(function (err) {
+		console.log(err);
+		res.send(false);
+		conn.close();
+	});
+});
 
 //Handle Login Form
 app.post('/login', function(req, res) {
@@ -80,16 +378,12 @@ app.post('/login', function(req, res) {
 					req.session.loggedin = true;
    				req.session.user_id = recordset.recordset[0].user_id;
    				req.session.username = username;
-
-					inventoryRouter.getInventoryFromDb(req.session.user_id, req.session.username, function(inventory) {
-						console.log('Acquired inventory from function: ');
-						console.log(inventory);
-						req.session.inventory = inventory;
-						res.redirect('/home');
+					recipeRouter.updateRecipeStack(req,res, function(callback) {
+						inventoryRouter.updateInventory(req, res);
 					});
 	      }
 	      else {
-	 				//res.send('Incorrect Username and/or Password!');
+					//Reload page and inform user of incorrect login credentials:
 	 				res.render('login', {response: 'Incorrect username and/or password.'});
 				}
 				conn.close();
@@ -197,52 +491,6 @@ app.post('/signup', function(req, res) {
 	  });
 	}
 });
-
-/*
-function getInventoryFromDb(req, res, callback) {
-	var user_id = req.session.user_id;
-	var username = req.session.username;
-	var inventory = new Array();
-  //pull all SQL entries from ivnentory table with user_id
-  var conn = new sql.ConnectionPool(dbConfig);
-	var inventory = new Array();
-  conn.connect()
-  // Successfull connection
-  .then(function () {
-
-    // Create request instance, passing in connection instance
-    var request = new sql.Request(conn);
-		console.log(' -- Getting Inventory Data for User ID: ' + user_id + ', \"' + username + '\"');
-    // Call mssql's query method passing in params
-    request.query('SELECT inventory.inv_id, inventory.user_id, inventory.amount, inventory.measurement_id, inventory.expiry_date, ingredients.ingredient_id, ingredients.ingredient_name, measurements.measurement FROM ((ingredients INNER JOIN inventory ON inventory.ingredient_id=ingredients.ingredient_id) INNER JOIN measurements ON inventory.measurement_id=measurements.measurement_id) WHERE user_id = ' + user_id)
-    .then(function (recordset) {
-			console.log('Rows affected: ' + recordset.rowsAffected);
-      if (recordset.rowsAffected > 0) {
-				var i;
-				for (i = 0; i < recordset.rowsAffected; i++) {
-					inventory.push(recordset.recordset[i]);
-					console.log('Record (' + i + ') added to inventory:');
-					console.log(recordset.recordset[i]);
-				}
-				console.log('Finished adding records to inventory.');
-				//console.log(inventory);
-				callback(inventory);
-      }
-      conn.close();
-    })
-    // Handle sql statement execution errors
-    .catch(function (err) {
-      console.log(err);
-      conn.close();
-    })
-  })
-  // Handle connection errors
-  .catch(function (err) {
-    console.log(err);
-    conn.close();
-  });
-}*/
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
